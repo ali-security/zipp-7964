@@ -9,6 +9,8 @@ import re
 from .py310compat import text_encoding
 from .glob import translate
 
+from ._functools import save_method_args
+
 
 __all__ = ['Path']
 
@@ -71,13 +73,12 @@ class InitializedState:
     Mix-in to save the initialization state for pickling.
     """
 
+    @save_method_args
     def __init__(self, *args, **kwargs):
-        self.__args = args
-        self.__kwargs = kwargs
         super().__init__(*args, **kwargs)
 
     def __getstate__(self):
-        return self.__args, self.__kwargs
+        return self._saved___init__.args, self._saved___init__.kwargs
 
     def __setstate__(self, state):
         args, kwargs = state
